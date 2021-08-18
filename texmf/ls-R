@@ -1,0 +1,21 @@
+% ls-R -- filename database for kpathsea; do not change this line.
+./:
+bibtex
+ls-R
+tex
+
+./bibtex:
+bst
+
+./bibtex/bst:
+naturemag-doi.bst
+
+
+./tex:
+latex
+
+./tex/latex:
+jabbrv-ltwa-all.ldf
+jabbrv-ltwa-en.ldf
+jabbrv.sty
+wlscirep.cls

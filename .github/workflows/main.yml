@@ -67,3 +67,4 @@ jobs:
             *.eps
             *.png
             *.jpg
+            *.csv

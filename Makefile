@@ -19,24 +19,27 @@ override IMAGES = $(patsubst %.dot,%.eps,$(wildcard *.dot))
 override ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 .PHONY: all
-all: $(patsubst %.tex,target/%.pdf,$(wildcard *.tex))
+all: $(patsubst %.tex,target/%.pdf,$(wildcard *.tex)) $(patsubst %.R,%.R.d,$(wildcard *.R))
 
 .PHONY: visuals
 visuals: $(IMAGES) $(FIGURES) 
 
 paper.zip: all
-	zip -j $@ *.tex *.eps *.jpg *.png target/*.pdf target/*.bbl
+	zip -j $@ *.tex *.eps *.jpg *.png target/*.pdf target/*.bbl *.csv
+
+%.csv: %.R
+	Rscript $<
 
 .PHONY: init
 init:
-	Rscript -e 'renv::restore()'
+	Rscript -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv");renv::restore()'
 
 texmf/ls-R: $(call rwildcard,texmf/tex/,*) $(call rwildcard,texmf/bibtex/,*)
 	texhash "texmf"    
 
 .PHONY: clean
 clean:
-	rm -rf "target" $(IMAGES) $(FIGURES) *.tex.d *-eps-converted-to.pdf
+	rm -rf "target" $(IMAGES) $(FIGURES) *.tex.d *-eps-converted-to.pdf *.csv *.R.d *.png
 
 .PHONY: distclean
 distclean: clean
@@ -53,9 +56,16 @@ target/%.pdf: %.tex %.tex.d texmf/ls-R target
 	dot -Teps -o$@ $<
 
 %.eps: %.R bootstrap.R
-	Rscript $<
+	Rscript $< -- --eps
 
 %.tex.d: %.tex
 	@perl texdep.pl $< $(patsubst %.tex,target/%.pdf,$<)
 
 -include $(patsubst %.tex,%.tex.d,$(wildcard *.tex))
+
+%.R.d: %.R
+	@perl rdep.pl $< $(patsubst %.R,%.eps,$<)
+
+-include $(patsubst %.R,%.R.d,$(wildcard *.R))
+
+

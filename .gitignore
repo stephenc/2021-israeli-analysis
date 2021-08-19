@@ -1,4 +1,7 @@
 /target/
 *.eps
+*.png
 *.tex.d
 paper.zip
+data.csv
+*.R.d

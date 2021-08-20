@@ -37,13 +37,25 @@ range_mode_source <- function(exclusive_upper_bound, count) {
   }
 }
 
+#' Selects the newest filename matching the supplied glob pattern
+#'
+#' @param glob the pattern to match
+#' @return a vector with one or zero entries corresponding to the file with the newest modification timestamp.
+newest_matching_file <- function(glob) {
+  candidates <- file.info(Sys.glob(glob))
+  candidates <- candidates[with(candidates, order(as.POSIXct(mtime))), ]
+  tail(rownames(candidates), n=1)
+}
+
+
 #
 # Process the vaccinated by day file to prepare for merging.
 #
 # Expected outcome should be aggregated by week and partitioned by age group to match other data sets
 #
-message("Loading data/vaccinated-per-day-2021-08-17.csv")
-vaccinated <- read.csv('data/vaccinated-per-day-2021-08-17.csv')
+filename <- newest_matching_file("data/vaccinated-per-day-*.csv")
+message("Loading ", filename)
+vaccinated <- read.csv(filename)
 
 # Clean up text values from import
 vaccinated[vaccinated == "<15"] <- range_mode_source(15, sum(vaccinated == "<15"))
@@ -85,8 +97,9 @@ vaccinated <- vaccinated %>%
 # Expected outcome should be the demographics partitioned into the same age buckets as the other data sets
 #
 
-message("Loading data/population_age_groups.csv")
-population <- read.csv('data/population_age_groups.csv') %>%
+filename <- newest_matching_file("data/population_age_groups*.csv")
+message("Loading ", filename)
+population <- read.csv(filename) %>%
   mutate(
     age_group = factor(age_group),
     male = as.numeric(male),
@@ -104,8 +117,9 @@ population <- read.csv('data/population_age_groups.csv') %>%
 # Expected outcome should be the dataset normalized to the same age buckets as the other data sets
 #
 
-message("Loading data/cases-among-vaccinated-105.csv")
-cases <- read.csv('data/cases-among-vaccinated-105.csv') %>%
+filename <- newest_matching_file("data/cases-among-vaccinated*.csv")
+message("Loading ", filename)
+cases <- read.csv(filename) %>%
   rename(age_group = "Age_group", positive_without_vaccination = "Sum_positive_without_vaccination")
 
 # Clean up text values from import
@@ -165,8 +179,9 @@ cases <- cases %>%
 # hospitalizations moved from rows to columns
 #
 
-message("Loading data/event-among-vaccinated-44.csv")
-events <- read.csv('data/event-among-vaccinated-44.csv') %>%
+filename <- newest_matching_file("data/event-among-vaccinated-*.csv")
+message("Loading ", filename)
+events <- read.csv(filename) %>%
   rename(age_group = "Age_group")
 
 # Clean up text values from import
@@ -218,8 +233,9 @@ events_all <- left_join(events_deaths, events_hospit, by = c("first_week_day", "
 # moved from rows to columns
 #
 
-message("Loading data/corona_age_and_gender_ver_00125.csv")
-ages <- read.csv('data/corona_age_and_gender_ver_00125.csv')
+filename <- newest_matching_file("data/corona_age_and_gender_ver_*.csv")
+message("Loading ", filename)
+ages <- read.csv(filename)
 
 # Translate Gender into english
 ages$gender <- recode(ages$gender, "זכר" = "male", "לא ידוע" = "unknown", "נקבה" = "female")
@@ -287,8 +303,9 @@ ages_agg <- ages %>%
 # Expected outcome should be the dataset normalized to the same age buckets as the other data sets
 #
 
-message("Loading data/positive-cases-3.csv")
-positives <- read.csv('data/positive-cases-3.csv') %>%
+filename <- newest_matching_file("data/positive-cases*.csv")
+message("Loading ", filename)
+positives <- read.csv(filename) %>%
   rename(
     age_group = "Age_group",
     positives_tests_num = "Tests_num",
@@ -342,6 +359,7 @@ data <- ages_agg %>%
     fraction_vaccinacted_third_dose = total_vaccinated_third_dose / total_population,
   )
 
+# Save results
 message("Writing ", sub(".R", ".csv", script.name))
 write.csv(data, file = sub(".R", ".csv", script.name), row.names = FALSE)
 

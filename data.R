@@ -88,7 +88,8 @@ vaccinated <- vaccinated %>%
     total_vaccinated_first_dose = cumsum(weekly_vaccinated_first_dose),
     total_vaccinated_second_dose = cumsum(weekly_vaccinated_second_dose),
     total_vaccinated_third_dose = cumsum(weekly_vaccinated_third_dose),
-    total_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_second_dose))
+    total_two_dose_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_second_dose)),
+    total_three_dose_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_third_dose))
   )
 
 #
@@ -143,6 +144,10 @@ cases <- cases %>%
     positive_7_13_days_after_2nd_dose = as.numeric(positive_7_13_days_after_2nd_dose),
     positive_14_20_days_after_2nd_dose = as.numeric(positive_14_20_days_after_2nd_dose),
     positive_above_20_days_after_2nd_dose = as.numeric(positive_above_20_days_after_2nd_dose),
+    positive_1_6_days_after_3rd_dose = as.numeric(positive_1_6_days_after_3rd_dose),
+    positive_7_13_days_after_3rd_dose = as.numeric(positive_7_13_days_after_3rd_dose),
+    positive_14_20_days_after_3rd_dose = as.numeric(positive_14_20_days_after_3rd_dose),
+    positive_above_20_days_after_3rd_dose = as.numeric(positive_above_20_days_after_3rd_dose),
     positive_without_vaccination = as.numeric(positive_without_vaccination)
   ) %>%
   select(
@@ -156,7 +161,23 @@ cases <- cases %>%
     positive_total_after_2nd_dose = positive_1_6_days_after_2nd_dose +
       positive_7_13_days_after_2nd_dose +
       positive_14_20_days_after_2nd_dose +
-      positive_above_20_days_after_2nd_dose
+      positive_above_20_days_after_2nd_dose,
+    positive_total_after_3rd_dose = positive_1_6_days_after_3rd_dose +
+      positive_7_13_days_after_3rd_dose +
+      positive_14_20_days_after_3rd_dose +
+      positive_above_20_days_after_3rd_dose,
+    positive_total_partial_2nd_dose = positive_1_6_days_after_2nd_dose +
+      positive_7_13_days_after_2nd_dose,
+    positive_total_partial_3rd_dose = positive_1_6_days_after_3rd_dose +
+      positive_7_13_days_after_3rd_dose,
+    positive_total_full_2nd_dose = positive_14_20_days_after_2nd_dose +
+      positive_above_20_days_after_2nd_dose,
+    positive_total_full_3rd_dose = positive_14_20_days_after_3rd_dose +
+      positive_above_20_days_after_3rd_dose,
+    positive_total = positive_total_after_1st_dose +
+      positive_total_after_2nd_dose +
+      positive_total_after_3rd_dose +
+      positive_without_vaccination
   ) %>%
   group_by(first_week_day, last_week_day, age_group) %>%
   summarise(
@@ -168,8 +189,19 @@ cases <- cases %>%
     positive_1_6_days_after_2nd_dose = sum(positive_1_6_days_after_2nd_dose),
     positive_7_13_days_after_2nd_dose = sum(positive_7_13_days_after_2nd_dose),
     positive_14_20_days_after_2nd_dose = sum(positive_14_20_days_after_2nd_dose),
+    positive_above_20_days_after_2nd_dose = sum(positive_above_20_days_after_2nd_dose),
     positive_total_after_2nd_dose = sum(positive_total_after_2nd_dose),
-    positive_without_vaccination = sum(positive_without_vaccination)
+    positive_total_partial_2nd_dose = sum(positive_total_partial_2nd_dose),
+    positive_total_full_2nd_dose = sum(positive_total_full_2nd_dose),
+    positive_1_6_days_after_3rd_dose = sum(positive_1_6_days_after_3rd_dose),
+    positive_7_13_days_after_3rd_dose = sum(positive_7_13_days_after_3rd_dose),
+    positive_14_20_days_after_3rd_dose = sum(positive_14_20_days_after_3rd_dose),
+    positive_above_20_days_after_3rd_dose = sum(positive_above_20_days_after_3rd_dose),
+    positive_total_after_3rd_dose = sum(positive_total_after_3rd_dose),
+    positive_total_partial_3rd_dose = sum(positive_total_partial_3rd_dose),
+    positive_total_full_3rd_dose = sum(positive_total_full_3rd_dose),
+    positive_without_vaccination = sum(positive_without_vaccination),
+    positive_total = sum(positive_total)
   )
 
 #
@@ -200,6 +232,7 @@ events <- events %>%
     last_week_day = as.Date(substr(Week, start = 13, stop = 23), format = "%Y-%m-%d"),
     event_after_1st_dose = as.numeric(event_after_1st_dose),
     event_after_2nd_dose = as.numeric(event_after_2nd_dose),
+    event_after_3rd_dose = as.numeric(event_after_3rd_dose),
     event_for_not_vaccinated = as.numeric(event_for_not_vaccinated)
   ) %>%
   select(
@@ -220,9 +253,11 @@ events_all <- left_join(events_deaths, events_hospit, by = c("first_week_day", "
   summarise(
     hospitalization_after_1st_dose = sum(event_after_1st_dose_hospit),
     hospitalization_after_2nd_dose = sum(event_after_2nd_dose_hospit),
+    hospitalization_after_3rd_dose = sum(event_after_3rd_dose_hospit),
     hospitalization_for_not_vaccinated = sum(event_for_not_vaccinated_hospit),
     deaths_after_1st_dose = sum(event_after_1st_dose_deaths),
     deaths_after_2nd_dose = sum(event_after_2nd_dose_deaths),
+    deaths_after_3rd_dose = sum(event_after_3rd_dose_deaths),
     deaths_for_not_vaccinated = sum(event_for_not_vaccinated_deaths)
   )
 
@@ -354,12 +389,20 @@ data <- ages_agg %>%
   inner_join(., population, byte = c("age_group")) %>%
   mutate(
     total_unvaccinated = total_population - ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_first_dose),
-    fraction_vaccinacted_first_dose = total_vaccinated_first_dose / total_population,
-    fraction_vaccinacted_second_dose = total_vaccinated_second_dose / total_population,
-    fraction_vaccinacted_third_dose = total_vaccinated_third_dose / total_population,
+    fraction_unvaccinated = total_unvaccinated / total_population,
+    fraction_vaccinacted_first_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_first_dose / total_population),
+    fraction_vaccinacted_second_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_second_dose / total_population),
+    fraction_vaccinacted_third_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
+    fraction_vaccinacted_first_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_first_dose - total_vaccinated_second_dose) / total_population),
+    fraction_vaccinacted_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_vaccinated_third_dose) / total_population),
+    fraction_vaccinacted_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
+    fraction_partially_vaccinacted_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_two_dose_fully_vaccinated) / total_population),
+    fraction_partially_vaccinacted_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_third_dose - total_three_dose_fully_vaccinated) / total_population),
+    fraction_fully_vaccinacted_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_two_dose_fully_vaccinated - total_vaccinated_third_dose) / total_population),
+    fraction_fully_vaccinacted_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_three_dose_fully_vaccinated / total_population),
   )
 
 # Save results
 message("Writing ", sub(".R", ".csv", script.name))
-write.csv(data, file = sub(".R", ".csv", script.name), row.names = FALSE)
+write.csv(data, file = sub(".R", ".csv", script.name), row.names = FALSE, quote = TRUE)
 

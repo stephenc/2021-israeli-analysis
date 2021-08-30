@@ -25,7 +25,7 @@ dev.on <- function(file) {
   setEPS()
     postscript(paste(file, ".eps", sep=""))
   } else {
-    png(paste(file, ".png"), width = 1536, height = 1152)
+    png(paste(file, ".png", sep=""), width = 1536, height = 1152)
   }
 }
 
@@ -63,8 +63,9 @@ plot(gridExtra::grid.arrange(g1, g2, g3, g4, ncol = 2))
 dev.off()
 
 g5 <- ggplot(data %>% filter(age_group == "50-59"), aes(x = last_week_day, y = weekly_deceased)) +
-  geom_col(aes(y = deaths_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = deaths_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = deaths_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
@@ -73,8 +74,9 @@ g5 <- ggplot(data %>% filter(age_group == "50-59"), aes(x = last_week_day, y = w
   theme_bw()
 
 g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = weekly_deceased)) +
-  geom_col(aes(y = deaths_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = deaths_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = deaths_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
@@ -83,8 +85,9 @@ g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = w
   theme_bw()
 
 g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = weekly_deceased)) +
-  geom_col(aes(y = deaths_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = deaths_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = deaths_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
@@ -93,8 +96,9 @@ g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = w
   theme_bw()
 
 g8 <- ggplot(data %>% filter(age_group == "80+"), aes(x = last_week_day, y = weekly_deceased)) +
-  geom_col(aes(y = deaths_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = deaths_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = deaths_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = deaths_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
@@ -109,8 +113,9 @@ dev.off()
 
 
 g5 <- ggplot(data %>% filter(age_group == "50-59"), aes(x = last_week_day, y = weekly_cases)) +
-  geom_col(aes(y = hospitalization_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = hospitalization_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
@@ -119,8 +124,9 @@ g5 <- ggplot(data %>% filter(age_group == "50-59"), aes(x = last_week_day, y = w
   theme_bw()
 
 g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = weekly_cases)) +
-  geom_col(aes(y = hospitalization_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = hospitalization_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
@@ -129,8 +135,9 @@ g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = w
   theme_bw()
 
 g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = weekly_cases)) +
-  geom_col(aes(y = hospitalization_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = hospitalization_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
@@ -139,8 +146,9 @@ g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = w
   theme_bw()
 
 g8 <- ggplot(data %>% filter(age_group == "80+"), aes(x = last_week_day, y = weekly_cases)) +
-  geom_col(aes(y = hospitalization_after_1st_dose, fill = "Partially vaccinated")) +
-  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "Fully vaccinated")) +
+  geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_2nd_dose, fill = "2 dose vaccinated")) +
+  geom_col(aes(y = hospitalization_after_3rd_dose, fill = "3 dose vaccinated")) +
   geom_col(aes(y = hospitalization_for_not_vaccinated, fill = "Unvaccinated")) +
   geom_line() +
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
@@ -156,7 +164,7 @@ dev.off()
 dev.on(sub(".R", "4", script.name))
 plot(ggplot(data %>%
               drop_na() %>%
-              filter(age_group == "70-79"), aes(x = last_week_day)) +
+              filter(age_group == "20-29"), aes(x = last_week_day)) +
        geom_line(aes(y = total_unvaccinated / total_population, colour = "Unvaccinated")) +
        geom_line(aes(y = total_vaccinated_first_dose / total_population, colour = "1st dose")) +
        geom_line(aes(y = total_vaccinated_second_dose / total_population, colour = "2nd dose")) +

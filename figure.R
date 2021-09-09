@@ -169,14 +169,14 @@ plot(ggplot(data %>%
        geom_line(aes(y = total_vaccinated_first_dose / total_population, colour = "1st dose")) +
        geom_line(aes(y = total_vaccinated_second_dose / total_population, colour = "2nd dose")) +
        geom_line(aes(y = total_vaccinated_third_dose / total_population, colour = "3rd dose")) +
-       geom_line(aes(y = total_fully_vaccinated / total_population, colour = "Fully vaccinated")) +
+       geom_line(aes(y = total_two_dose_fully_vaccinated / total_population, colour = "Fully vaccinated")) +
        labs(y = "% vaccinated", x = "Week ending", colour = "Vaccination status") +
        scale_x_date(date_labels = "%b %Y") +
        theme_bw())
 dev.off()
 
 dev.on(sub(".R", "5a", script.name))
-plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_after_2nd_dose / total_fully_vaccinated * 100000), colour = age_group)) +
+plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_after_2nd_dose / total_two_dose_fully_vaccinated * 100000), colour = age_group)) +
        geom_line() +
        labs(y = "Hospitalizations per 100k per week", x = "Week ending", colour = "Age group") +
        ggtitle("Hospitalization rate of fully vaccinated (at least 2 weeks since 2nd dose)") +
@@ -194,7 +194,7 @@ plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_for_
 dev.off()
 
 dev.on(sub(".R", "5c", script.name))
-plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_after_2nd_dose / total_fully_vaccinated) / (hospitalization_for_not_vaccinated / total_unvaccinated), colour = age_group)) +
+plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_after_2nd_dose / total_two_dose_fully_vaccinated) / (hospitalization_for_not_vaccinated / total_unvaccinated), colour = age_group)) +
        geom_line() +
        labs(y = "Relative Risk of Hospitalizations", x = "Week ending", colour = "Age group") +
        ggtitle("Relative Risk") +
@@ -202,7 +202,7 @@ plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_afte
        theme_bw())
 dev.off()
 
-ve_data <- data %>% mutate(ve = ((hospitalization_for_not_vaccinated / total_unvaccinated) - (hospitalization_after_2nd_dose / total_fully_vaccinated)) / (hospitalization_for_not_vaccinated / total_unvaccinated))
+ve_data <- data %>% mutate(ve = ((hospitalization_for_not_vaccinated / total_unvaccinated) - (hospitalization_after_2nd_dose / total_two_dose_fully_vaccinated)) / (hospitalization_for_not_vaccinated / total_unvaccinated))
 dev.on(sub(".R", "5", script.name))
 plot(ggplot(ve_data %>%
               drop_na() %>%
@@ -217,7 +217,7 @@ plot(ggplot(ve_data %>%
 dev.off()
 
 
-ve_data <- data %>% mutate(ve = ((deaths_for_not_vaccinated / total_unvaccinated) - (deaths_after_2nd_dose / total_fully_vaccinated)) / (deaths_for_not_vaccinated / total_unvaccinated))
+ve_data <- data %>% mutate(ve = ((deaths_for_not_vaccinated / total_unvaccinated) - (deaths_after_2nd_dose / total_two_dose_fully_vaccinated)) / (deaths_for_not_vaccinated / total_unvaccinated))
 dev.on(sub(".R", "6", script.name))
 plot(ggplot(ve_data %>%
               drop_na() %>%

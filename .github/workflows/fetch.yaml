@@ -20,7 +20,7 @@ jobs:
         with:
           java-version: 11.0.11.hs-adpt
           jdkFile: ${{ steps.sdkman.outputs.file }}
-      - run: curl -Ls https://sh.jbang.dev | bash -s - app setup
+      - run: curl -Ls https://sh.jbang.dev | bash -s - app setup && echo "/home/runner/.jbang/bin" >> $GITHUB_PATH
       - name: Fetch
         run: find / -name jbang -type f -print && fetch.java
         env:

@@ -46,6 +46,7 @@ public class fetch implements Runnable {
     @Override
     public void run() {
         Config config = loadConfig();
+        System.out.printf("User-Agent: %s%n", config.getAgent());
         Document doc = fetchIndex(config);
         doc.select("a")
                 .stream()

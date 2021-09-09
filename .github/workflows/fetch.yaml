@@ -17,7 +17,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-jbang-
       - name: Fetch
-        uses: jbangdev/jbang-action@v0.79.0
+        uses: stephenc/jbang-action@with-playwright
         with:
           script: fetch.java
         env:

@@ -2,12 +2,14 @@
 //JAVA 11+
 //JAVAC_OPTIONS -Xlint:unchecked
 //DEPS info.picocli:picocli:4.5.0
-//DEPS com.fasterxml.jackson.core:jackson-databind:2.12.4
-//DEPS  org.jsoup:jsoup:1.14.2
+//DEPS org.jsoup:jsoup:1.14.2
+//DEPS com.microsoft.playwright:playwright:1.12.0
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.Cookie;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import picocli.CommandLine;
@@ -45,9 +48,50 @@ public class fetch implements Runnable {
 
     @Override
     public void run() {
-        Config config = loadConfig();
-        System.out.printf("User-Agent: %s%n", config.getAgent());
+        Config config;
+        System.out.println("Trying to capture a set of session cookies to use...");
+        try (Playwright playwright = Playwright.create()) {
+            try (Browser b = playwright.firefox().launch()) {
+                Browser.NewContextOptions options = new Browser.NewContextOptions();
+                String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0";
+                options.setUserAgent(userAgent);
+                BrowserContext ctx = b.newContext(options);
+                Page page = ctx.newPage();
+                page.route("**", route -> {
+                    System.out.printf("  FETCH %s%n", route.request().url());
+                    route.resume();
+                });
+                page.navigate("https://data.gov.il/dataset/covid-19");
+                System.out.println("Waiting for Javascript to request a session cookie...");
+                page.waitForResponse(Pattern.compile("/[A-Za-z0-9]{8}[A-Za-z0-9]+/[^/]+"), () -> {
+                });
+                System.out.println("Waiting for redirect back to original request page...");
+                page.waitForResponse(Pattern.compile("/dataset/covid-19"), () -> {
+                });
+                System.out.println("Extracting cookies...");
+                String rbzid = null;
+                String rbzsessionid = null;
+                for (Cookie c : ctx.cookies()) {
+                    switch (c.name) {
+                        case "rbzid":
+                            rbzid = c.value;
+                            break;
+                        case "rbzsessionid":
+                            rbzsessionid = c.value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (rbzid == null || rbzsessionid == null) {
+                    throw new RuntimeException("Could not capture session cookies");
+                }
+                config = new Config(userAgent, rbzid, rbzsessionid);
+            }
+        }
+        System.out.println("Fetching index page...");
         Document doc = fetchIndex(config);
+        System.out.println("Looking for current download links...");
         doc.select("a")
                 .stream()
                 .map(e -> e.attr("href"))
@@ -92,6 +136,7 @@ public class fetch implements Runnable {
                         throw new UncheckedIOException(e);
                     }
                 });
+        System.out.println("Done.");
     }
 
     private Document fetchIndex(Config config) {
@@ -106,33 +151,12 @@ public class fetch implements Runnable {
         }
     }
 
-    private Config loadConfig() {
-        try {
-            Path configPath = Paths.get(configFile);
-            if (!Files.exists(configPath)) {
-                String fetchJson = System.getenv("FETCH_JSON");
-                if (fetchJson != null && fetchJson.trim().length() > 0) {
-                    return new ObjectMapper().reader().readValue(fetchJson, Config.class);
-                }
-                throw new RuntimeException("No authentication configuration available. Neither " + configFile
-                        + " exists nor FETCH_JSON environment set");
-            } else {
-                return new ObjectMapper().reader().readValue(Files.readAllBytes(Paths.get(configFile)), Config.class);
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     public static class Config {
         private final String agent;
         private final String rbzid;
         private final String rbzsessionid;
 
-        @JsonCreator
-        public Config(@JsonProperty(value = "agent", required = true) String agent,
-                      @JsonProperty(value = "rbzid", required = true) String rbzid,
-                      @JsonProperty(value = "rbzsessionid", required = true) String rbzsessionid) {
+        public Config(String agent, String rbzid, String rbzsessionid) {
             this.agent = agent;
             this.rbzid = rbzid;
             this.rbzsessionid = rbzsessionid;

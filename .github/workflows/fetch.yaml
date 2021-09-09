@@ -22,7 +22,6 @@ jobs:
           script: fetch.java
         env:
           JBANG_REPO: /root/.jbang/repository
-          FETCH_JSON: ${{ secrets.FETCH_JSON }}
       - run: git add data
       - uses: mikeal/publish-to-github-action@master
         env:

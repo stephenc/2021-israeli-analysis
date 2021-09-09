@@ -22,7 +22,7 @@ jobs:
           jdkFile: ${{ steps.sdkman.outputs.file }}
       - run: curl -Ls https://sh.jbang.dev | bash -s - app setup
       - name: Fetch
-        run: fetch.java
+        run: find / -name jbang -type f -print && fetch.java
         env:
           JBANG_REPO: /home/runner/.jbang/repository
       - run: git add data

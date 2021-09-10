@@ -390,16 +390,16 @@ data <- ages_agg %>%
   mutate(
     total_unvaccinated = total_population - ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_first_dose),
     fraction_unvaccinated = total_unvaccinated / total_population,
-    fraction_vaccinacted_first_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_first_dose / total_population),
-    fraction_vaccinacted_second_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_second_dose / total_population),
-    fraction_vaccinacted_third_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
-    fraction_vaccinacted_first_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_first_dose - total_vaccinated_second_dose) / total_population),
-    fraction_vaccinacted_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_vaccinated_third_dose) / total_population),
-    fraction_vaccinacted_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
-    fraction_partially_vaccinacted_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_two_dose_fully_vaccinated) / total_population),
-    fraction_partially_vaccinacted_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_third_dose - total_three_dose_fully_vaccinated) / total_population),
-    fraction_fully_vaccinacted_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_two_dose_fully_vaccinated - total_vaccinated_third_dose) / total_population),
-    fraction_fully_vaccinacted_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_three_dose_fully_vaccinated / total_population),
+    fraction_vaccinated_first_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_first_dose / total_population),
+    fraction_vaccinated_second_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_second_dose / total_population),
+    fraction_vaccinated_third_dose = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
+    fraction_vaccinated_first_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_first_dose - total_vaccinated_second_dose) / total_population),
+    fraction_vaccinated_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_vaccinated_third_dose) / total_population),
+    fraction_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
+    fraction_partially_vaccinated_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_two_dose_fully_vaccinated) / total_population),
+    fraction_partially_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_third_dose - total_three_dose_fully_vaccinated) / total_population),
+    fraction_fully_vaccinated_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_two_dose_fully_vaccinated - total_vaccinated_third_dose) / total_population),
+    fraction_fully_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_three_dose_fully_vaccinated / total_population),
   )
 
 # Save results

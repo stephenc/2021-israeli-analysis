@@ -46,7 +46,6 @@ data <- read.csv('data.csv') %>%
 
 target_week <- data %>%
   filter(!is.na(positive_total)) %>%
-  filter(first_week_day == '2021-07-04') %>%
   summarize(first_week_day = max(first_week_day), last_week_day = max(last_week_day))
 
 target_data <- data %>% filter(first_week_day == target_week[['first_week_day']])

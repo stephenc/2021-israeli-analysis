@@ -25,8 +25,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/stephenc/docker-science-data-reporting:main
-      options: --user 1001
+      image: ghcr.io/stephenc/docker-science-data-reporting:v1.0.0
     steps:
       - name: Checkout source
         uses: actions/checkout@v2

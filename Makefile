@@ -68,4 +68,4 @@ target/%.pdf: %.tex %.tex.d texmf/ls-R target
 
 -include $(patsubst %.R,%.R.d,$(wildcard *.R))
 
-
+data.csv: data.R

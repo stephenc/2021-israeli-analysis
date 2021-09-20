@@ -26,9 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/stephenc/docker-science-data-reporting:main
+      options: --user 1001
     steps:
-#      - name: Checkout source
-#        uses: actions/checkout@v2
+      - name: Checkout source
+        uses: actions/checkout@v2
       - name: Generate
         run: |
           make init

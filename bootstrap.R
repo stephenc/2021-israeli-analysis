@@ -26,6 +26,7 @@ library('expint', warn.conflicts = FALSE, character.only = TRUE)
 library('deSolve', warn.conflicts = FALSE, character.only = TRUE)
 library('qrcode', warn.conflicts = FALSE, character.only = TRUE)
 library('ggplotify', warn.conflicts = FALSE, character.only = TRUE)
+library('gtools', warn.conflicts = FALSE, character.only = TRUE)
 
 # Populate the running script name in script.name
 initial.options <- commandArgs(trailingOnly = FALSE)

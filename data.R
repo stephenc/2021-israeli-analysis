@@ -43,7 +43,7 @@ range_mode_source <- function(exclusive_upper_bound, count) {
 #' @return a vector with one or zero entries corresponding to the file with the newest modification timestamp.
 newest_matching_file <- function(glob) {
   candidates <- file.info(Sys.glob(glob))
-  candidates <- candidates[with(candidates, order(as.POSIXct(mtime))), ]
+  candidates <- candidates[with(candidates, order(as.POSIXct(ctime))), ]
   tail(rownames(candidates), n=1)
 }
 

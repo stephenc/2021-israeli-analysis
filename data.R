@@ -347,7 +347,9 @@ positives <- read.csv(filename) %>%
     positives_not_recovered_at_least_2_doses = "Not_recovered_at_least_2_doses",
     positives_not_recovered_partially_vaccinated = "Not_recovered_partially_vaccinated",
     positives_not_recovered_not_vaccinated = "Not_recovered_not_vaccinated",
-    positives_cases_among_recovered = "Cases_among_recovered")
+    positives_cases_among_recovered_vaccinated = "Cases_among_recoverd_with_vacc",
+    positives_cases_among_recovered_not_vaccinated = "Cases_among_recovered_without_vacc"
+    )
 
 # Clean up text values from import
 positives[positives == "<5"] <- range_mode_source(5, sum(positives == "<5"))
@@ -366,7 +368,8 @@ positives <- positives %>%
     positives_not_recovered_at_least_2_doses = as.numeric(positives_not_recovered_at_least_2_doses),
     positives_not_recovered_partially_vaccinated = as.numeric(positives_not_recovered_partially_vaccinated),
     positives_not_recovered_not_vaccinated = as.numeric(positives_not_recovered_not_vaccinated),
-    positives_cases_among_recovered = as.numeric(positives_cases_among_recovered)
+    positives_cases_among_recovered_vaccinated = as.numeric(positives_cases_among_recovered_vaccinated),
+    positives_cases_among_recovered_not_vaccinated = as.numeric(positives_cases_among_recovered_not_vaccinated)
   ) %>%
   select(
     -Week,

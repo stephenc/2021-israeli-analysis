@@ -383,10 +383,10 @@ positives <- positives %>%
 # Combine data
 message("Joining datasets...")
 data <- ages_agg %>%
-  left_join(., events_all, by = c("first_week_day", "last_week_day", "age_group")) %>%
-  left_join(., cases, by = c("first_week_day", "last_week_day", "age_group")) %>%
-  left_join(., vaccinated, by = c("first_week_day", "last_week_day", "age_group")) %>%
-  left_join(., positives, by = c("first_week_day", "last_week_day", "age_group")) %>%
+  full_join(., events_all, by = c("first_week_day", "last_week_day", "age_group")) %>%
+  full_join(., cases, by = c("first_week_day", "last_week_day", "age_group")) %>%
+  full_join(., vaccinated, by = c("first_week_day", "last_week_day", "age_group")) %>%
+  full_join(., positives, by = c("first_week_day", "last_week_day", "age_group")) %>%
   inner_join(., population, byte = c("age_group")) %>%
   mutate(
     total_unvaccinated = total_population - ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_first_dose),
@@ -401,7 +401,7 @@ data <- ages_agg %>%
     fraction_partially_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_third_dose - total_three_dose_fully_vaccinated) / total_population),
     fraction_fully_vaccinated_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_two_dose_fully_vaccinated - total_vaccinated_third_dose) / total_population),
     fraction_fully_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_three_dose_fully_vaccinated / total_population),
-  )
+  ) %>% arrange("first_week_day", "last_week_day", "age_group")
 
 # Save results
 message("Writing ", sub(".R", ".csv", script.name))

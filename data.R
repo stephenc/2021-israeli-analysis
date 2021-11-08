@@ -140,8 +140,9 @@ cases <- cases %>%
     positive_above_20_days_after_1st_dose = as.numeric(positive_above_20_days_after_1st_dose),
     positive_1_6_days_after_2nd_dose = as.numeric(positive_1_6_days_after_2nd_dose),
     positive_7_13_days_after_2nd_dose = as.numeric(positive_7_13_days_after_2nd_dose),
-    positive_14_20_days_after_2nd_dose = as.numeric(positive_14_20_days_after_2nd_dose),
-    positive_above_20_days_after_2nd_dose = as.numeric(positive_above_20_days_after_2nd_dose),
+    positive_14_30_days_after_2nd_dose = as.numeric(positive_14_30_days_after_2nd_dose),
+    positive_31_90_days_after_2nd_dose = as.numeric(positive_31_90_days_after_2nd_dose),
+    positive_above_90_days_after_2nd_dose = as.numeric(positive_above_90_days_after_2nd_dose),
     positive_1_6_days_after_3rd_dose = as.numeric(positive_1_6_days_after_3rd_dose),
     positive_7_13_days_after_3rd_dose = as.numeric(positive_7_13_days_after_3rd_dose),
     positive_14_20_days_after_3rd_dose = as.numeric(positive_14_20_days_after_3rd_dose),
@@ -158,8 +159,9 @@ cases <- cases %>%
       positive_above_20_days_after_1st_dose,
     positive_total_after_2nd_dose = positive_1_6_days_after_2nd_dose +
       positive_7_13_days_after_2nd_dose +
-      positive_14_20_days_after_2nd_dose +
-      positive_above_20_days_after_2nd_dose,
+      positive_14_30_days_after_2nd_dose +
+      positive_31_90_days_after_2nd_dose +
+      positive_above_90_days_after_2nd_dose,
     positive_total_after_3rd_dose = positive_1_6_days_after_3rd_dose +
       positive_7_13_days_after_3rd_dose +
       positive_14_20_days_after_3rd_dose +
@@ -168,8 +170,9 @@ cases <- cases %>%
       positive_7_13_days_after_2nd_dose,
     positive_total_partial_3rd_dose = positive_1_6_days_after_3rd_dose +
       positive_7_13_days_after_3rd_dose,
-    positive_total_full_2nd_dose = positive_14_20_days_after_2nd_dose +
-      positive_above_20_days_after_2nd_dose,
+    positive_total_full_2nd_dose = positive_14_30_days_after_2nd_dose +
+      positive_31_90_days_after_2nd_dose +
+      positive_above_90_days_after_2nd_dose,
     positive_total_full_3rd_dose = positive_14_20_days_after_3rd_dose +
       positive_above_20_days_after_3rd_dose,
     positive_total = positive_total_after_1st_dose +
@@ -186,8 +189,9 @@ cases <- cases %>%
     positive_total_after_1st_dose = sum(positive_total_after_1st_dose),
     positive_1_6_days_after_2nd_dose = sum(positive_1_6_days_after_2nd_dose),
     positive_7_13_days_after_2nd_dose = sum(positive_7_13_days_after_2nd_dose),
-    positive_14_20_days_after_2nd_dose = sum(positive_14_20_days_after_2nd_dose),
-    positive_above_20_days_after_2nd_dose = sum(positive_above_20_days_after_2nd_dose),
+    positive_14_30_days_after_2nd_dose = sum(positive_14_30_days_after_2nd_dose),
+    positive_31_90_days_after_2nd_dose = sum(positive_31_90_days_after_2nd_dose),
+    positive_above_90_days_after_2nd_dose = sum(positive_above_90_days_after_2nd_dose),
     positive_total_after_2nd_dose = sum(positive_total_after_2nd_dose),
     positive_total_partial_2nd_dose = sum(positive_total_partial_2nd_dose),
     positive_total_full_2nd_dose = sum(positive_total_full_2nd_dose),

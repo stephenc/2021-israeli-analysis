@@ -255,6 +255,16 @@ events <- events %>%
     -Week,
   )
 
+# Finish aligning age group
+events <- events %>%
+  group_by(first_week_day, last_week_day, age_group, Type_of_event) %>%
+  summarise(
+    event_after_1st_dose = sum(event_after_1st_dose),
+    event_after_2nd_dose = sum(event_after_2nd_dose),
+    event_after_3rd_dose = sum(event_after_3rd_dose),
+    event_for_not_vaccinated = sum(event_for_not_vaccinated),
+  )
+
 # Filter out the rows for each type of event
 events_deaths <- events %>% filter(Type_of_event == "Death")
 events_hospit <- events %>% filter(Type_of_event == "Hospitalization")

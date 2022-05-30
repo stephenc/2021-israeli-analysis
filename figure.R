@@ -41,22 +41,26 @@ g1 <- ggplot(data, aes(x = last_week_day, y = weekly_cases, colour = age_group))
   geom_line() +
   labs(y = "Positive cases / week", x = "Week ending", colour = "Age group") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 g2 <- ggplot(data, aes(x = last_week_day, y = weekly_tests_num, colour = age_group)) +
   geom_line() +
   labs(y = "Tests / week", x = "Week ending", colour = "Age group") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 g3 <- ggplot(data, aes(x = last_week_day, y = weekly_cases / weekly_tests_num, colour = age_group)) +
   geom_line() +
   labs(y = "Positivity rate", x = "Week ending", colour = "Age group") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 g4 <- ggplot(data, aes(x = last_week_day, y = weekly_deceased, colour = age_group)) +
   geom_line() +
   labs(y = "Deaths / week", x = "Week ending", colour = "Age group") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 dev.on(sub(".R", "", script.name))
 plot(gridExtra::grid.arrange(g1, g2, g3, g4, ncol = 2))
@@ -71,7 +75,8 @@ g5 <- ggplot(data %>% filter(age_group == "50-59"), aes(x = last_week_day, y = w
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 50-59") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = weekly_deceased)) +
   geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
@@ -82,7 +87,8 @@ g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = w
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 60-69") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = weekly_deceased)) +
   geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
@@ -93,7 +99,8 @@ g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = w
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 70-79") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 g8 <- ggplot(data %>% filter(age_group == "80+"), aes(x = last_week_day, y = weekly_deceased)) +
   geom_col(aes(y = deaths_after_1st_dose, fill = "1 dose vaccinated")) +
@@ -104,7 +111,8 @@ g8 <- ggplot(data %>% filter(age_group == "80+"), aes(x = last_week_day, y = wee
   labs(y = "Deaths / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 80+") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 dev.on(sub(".R", "2", script.name))
 plot(gridExtra::grid.arrange(
@@ -121,7 +129,8 @@ g5 <- ggplot(data %>% filter(age_group == "50-59"), aes(x = last_week_day, y = w
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 50-59") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = weekly_cases)) +
   geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
@@ -132,7 +141,8 @@ g6 <- ggplot(data %>% filter(age_group == "60-69"), aes(x = last_week_day, y = w
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 60-69") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = weekly_cases)) +
   geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
@@ -143,7 +153,8 @@ g7 <- ggplot(data %>% filter(age_group == "70-79"), aes(x = last_week_day, y = w
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 70-79") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 g8 <- ggplot(data %>% filter(age_group == "80+"), aes(x = last_week_day, y = weekly_cases)) +
   geom_col(aes(y = hospitalization_after_1st_dose, fill = "1 dose vaccinated")) +
@@ -154,7 +165,8 @@ g8 <- ggplot(data %>% filter(age_group == "80+"), aes(x = last_week_day, y = wee
   labs(y = "Hospitalization / week", x = "Week ending", fill = "Vaccination status") +
   ggtitle("Ages 80+") +
   scale_x_date(date_labels = "%b %Y") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 dev.on(sub(".R", "3", script.name))
 plot(gridExtra::grid.arrange(
@@ -172,7 +184,8 @@ plot(ggplot(data %>%
        geom_line(aes(y = total_two_dose_fully_vaccinated / total_population, colour = "Fully vaccinated")) +
        labs(y = "% vaccinated", x = "Week ending", colour = "Vaccination status") +
        scale_x_date(date_labels = "%b %Y") +
-       theme_bw())
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 dev.off()
 
 dev.on(sub(".R", "5a", script.name))
@@ -181,7 +194,8 @@ plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_afte
        labs(y = "Hospitalizations per 100k per week", x = "Week ending", colour = "Age group") +
        ggtitle("Hospitalization rate of fully vaccinated (at least 2 weeks since 2nd dose)") +
        scale_x_date(date_labels = "%b %Y") +
-       theme_bw())
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 dev.off()
 
 dev.on(sub(".R", "5b", script.name))
@@ -190,7 +204,8 @@ plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_for_
        labs(y = "Hospitalizations per 100k per week", x = "Week ending", colour = "Age group") +
        ggtitle("Hospitalization rate of unvaccinated") +
        scale_x_date(date_labels = "%b %Y") +
-       theme_bw())
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 dev.off()
 
 dev.on(sub(".R", "5c", script.name))
@@ -199,7 +214,8 @@ plot(ggplot(data %>% drop_na(), aes(x = last_week_day, y = (hospitalization_afte
        labs(y = "Relative Risk of Hospitalizations", x = "Week ending", colour = "Age group") +
        ggtitle("Relative Risk") +
        scale_x_date(date_labels = "%b %Y") +
-       theme_bw())
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 dev.off()
 
 ve_data <- data %>% mutate(ve = ((hospitalization_for_not_vaccinated / total_unvaccinated) - (hospitalization_after_2nd_dose / total_two_dose_fully_vaccinated)) / (hospitalization_for_not_vaccinated / total_unvaccinated))
@@ -213,7 +229,8 @@ plot(ggplot(ve_data %>%
        labs(y = "Vaccine efficiency for Hospitalization", x = "Week ending", colour = "Vaccination status") +
        scale_x_date(date_labels = "%b %Y") +
        scale_y_continuous(labels = scales::percent, limits = c(-1, 1)) +
-       theme_bw())
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 dev.off()
 
 
@@ -228,6 +245,7 @@ plot(ggplot(ve_data %>%
        labs(y = "Vaccine efficiency for Deaths", x = "Week ending", colour = "Vaccination status") +
        scale_x_date(date_labels = "%b %Y") +
        scale_y_continuous(labels = scales::percent, limits = c(-1, 1)) +
-       theme_bw())
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 dev.off()
 

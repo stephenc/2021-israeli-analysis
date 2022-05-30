@@ -37,12 +37,17 @@ range_mode_source <- function(exclusive_upper_bound, count) {
   }
 }
 
-#' Selects the newest filename matching the supplied glob pattern
+#' Selects the newest filename matching the supplied glob pattern.
+#' Take care, if the filenames are like foo-123, foo-124 then
+#' -124 is less than -123 so will come... so for - separated dates
+#' this should do what you expect... but for _ separated dates
+#' you will need to select decreasing=TRUE to get the first one.
 #'
 #' @param glob the pattern to match
+#' @param decreasing whether the returned list should be decreasing
 #' @return a vector with one or zero entries corresponding to the file with the newest modification timestamp.
-newest_matching_file <- function(glob) {
-  mixedsort(Sys.glob(glob))[1]
+newest_matching_file <- function(glob,decreasing=FALSE) {
+  mixedsort(Sys.glob(glob),decreasing=decreasing)[1]
 }
 
 
@@ -66,28 +71,33 @@ vaccinated$age_group <- recode(vaccinated$age_group, "80-89" = "80+", "90+" = "8
 vaccinated <- vaccinated %>%
   mutate(
     age_group = factor(age_group),
-    first_week_day = floor_date(as.Date(VaccinationDate)),
-    last_week_day = as.Date(floor_date(as.Date(VaccinationDate))) + 6,
+    first_week_day = as.Date(floor_date(as.Date(VaccinationDate), "weeks", week_start = 0)),
+    last_week_day = as.Date(floor_date(as.Date(VaccinationDate), "weeks", week_start = 0)) + 6,
     first_dose = as.numeric(first_dose),
     second_dose = as.numeric(second_dose),
-    third_dose = as.numeric(third_dose)
+    third_dose = as.numeric(third_dose),
+    fourth_dose = as.numeric(fourth_dose)
   ) %>%
   group_by(first_week_day, last_week_day, age_group) %>%
   summarise(
     weekly_vaccinated_first_dose = sum(first_dose),
     weekly_vaccinated_second_dose = sum(second_dose),
-    weekly_vaccinated_third_dose = sum(third_dose)
+    weekly_vaccinated_third_dose = sum(third_dose),
+    weekly_vaccinated_fourth_dose = sum(fourth_dose)
   ) %>%
   group_by(age_group) %>%
   mutate(
     current_vaccinated_first_dose = cumsum(weekly_vaccinated_first_dose) - cumsum(weekly_vaccinated_second_dose),
     current_vaccinated_second_dose = cumsum(weekly_vaccinated_second_dose) - cumsum(weekly_vaccinated_third_dose),
-    current_vaccinated_third_dose = cumsum(weekly_vaccinated_third_dose),
+    current_vaccinated_second_dose = cumsum(weekly_vaccinated_third_dose) - cumsum(weekly_vaccinated_fourth_dose),
+    current_vaccinated_fourth_dose = cumsum(weekly_vaccinated_fourth_dose),
     total_vaccinated_first_dose = cumsum(weekly_vaccinated_first_dose),
     total_vaccinated_second_dose = cumsum(weekly_vaccinated_second_dose),
     total_vaccinated_third_dose = cumsum(weekly_vaccinated_third_dose),
+    total_vaccinated_fourth_dose = cumsum(weekly_vaccinated_fourth_dose),
     total_two_dose_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_second_dose)),
-    total_three_dose_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_third_dose))
+    total_three_dose_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_third_dose)),
+    total_four_dose_fully_vaccinated = lag(n = 2, cumsum(weekly_vaccinated_fourth_dose))
   )
 
 #
@@ -142,11 +152,12 @@ cases <- cases %>%
     positive_7_13_days_after_2nd_dose = as.numeric(positive_7_13_days_after_2nd_dose),
     positive_14_30_days_after_2nd_dose = as.numeric(positive_14_30_days_after_2nd_dose),
     positive_31_90_days_after_2nd_dose = as.numeric(positive_31_90_days_after_2nd_dose),
-    positive_above_90_days_after_2nd_dose = as.numeric(positive_above_90_days_after_2nd_dose),
+    positive_above_3_month_after_2nd_before_3rd_dose = as.numeric(positive_above_3_month_after_2nd_before_3rd_dose),
     positive_1_6_days_after_3rd_dose = as.numeric(positive_1_6_days_after_3rd_dose),
     positive_7_13_days_after_3rd_dose = as.numeric(positive_7_13_days_after_3rd_dose),
-    positive_14_20_days_after_3rd_dose = as.numeric(positive_14_20_days_after_3rd_dose),
-    positive_above_20_days_after_3rd_dose = as.numeric(positive_above_20_days_after_3rd_dose),
+    positive_14_30_days_after_3rd_dose = as.numeric(positive_14_30_days_after_3rd_dose),
+    positive_31_90_days_after_3rd_dose = as.numeric(positive_31_90_days_after_3rd_dose),
+    positive_above_90_days_after_3rd_dose = as.numeric(positive_above_90_days_after_3rd_dose),
     positive_without_vaccination = as.numeric(positive_without_vaccination)
   ) %>%
   select(
@@ -161,20 +172,22 @@ cases <- cases %>%
       positive_7_13_days_after_2nd_dose +
       positive_14_30_days_after_2nd_dose +
       positive_31_90_days_after_2nd_dose +
-      positive_above_90_days_after_2nd_dose,
+      positive_above_3_month_after_2nd_before_3rd_dose,
     positive_total_after_3rd_dose = positive_1_6_days_after_3rd_dose +
       positive_7_13_days_after_3rd_dose +
-      positive_14_20_days_after_3rd_dose +
-      positive_above_20_days_after_3rd_dose,
+      positive_14_30_days_after_3rd_dose +
+      positive_31_90_days_after_3rd_dose +
+      positive_above_90_days_after_3rd_dose,
     positive_total_partial_2nd_dose = positive_1_6_days_after_2nd_dose +
       positive_7_13_days_after_2nd_dose,
     positive_total_partial_3rd_dose = positive_1_6_days_after_3rd_dose +
       positive_7_13_days_after_3rd_dose,
     positive_total_full_2nd_dose = positive_14_30_days_after_2nd_dose +
       positive_31_90_days_after_2nd_dose +
-      positive_above_90_days_after_2nd_dose,
-    positive_total_full_3rd_dose = positive_14_20_days_after_3rd_dose +
-      positive_above_20_days_after_3rd_dose,
+      positive_above_3_month_after_2nd_before_3rd_dose,
+    positive_total_full_3rd_dose = positive_14_30_days_after_3rd_dose +
+      positive_31_90_days_after_3rd_dose +
+      positive_above_90_days_after_3rd_dose,
     positive_total = positive_total_after_1st_dose +
       positive_total_after_2nd_dose +
       positive_total_after_3rd_dose +
@@ -191,14 +204,15 @@ cases <- cases %>%
     positive_7_13_days_after_2nd_dose = sum(positive_7_13_days_after_2nd_dose),
     positive_14_30_days_after_2nd_dose = sum(positive_14_30_days_after_2nd_dose),
     positive_31_90_days_after_2nd_dose = sum(positive_31_90_days_after_2nd_dose),
-    positive_above_90_days_after_2nd_dose = sum(positive_above_90_days_after_2nd_dose),
+    positive_above_3_month_after_2nd_before_3rd_dose = sum(positive_above_3_month_after_2nd_before_3rd_dose),
     positive_total_after_2nd_dose = sum(positive_total_after_2nd_dose),
     positive_total_partial_2nd_dose = sum(positive_total_partial_2nd_dose),
     positive_total_full_2nd_dose = sum(positive_total_full_2nd_dose),
     positive_1_6_days_after_3rd_dose = sum(positive_1_6_days_after_3rd_dose),
     positive_7_13_days_after_3rd_dose = sum(positive_7_13_days_after_3rd_dose),
-    positive_14_20_days_after_3rd_dose = sum(positive_14_20_days_after_3rd_dose),
-    positive_above_20_days_after_3rd_dose = sum(positive_above_20_days_after_3rd_dose),
+    positive_14_30_days_after_3rd_dose = sum(positive_14_30_days_after_3rd_dose),
+    positive_31_90_days_after_3rd_dose = sum(positive_31_90_days_after_3rd_dose),
+    positive_above_90_days_after_3rd_dose = sum(positive_above_90_days_after_3rd_dose),
     positive_total_after_3rd_dose = sum(positive_total_after_3rd_dose),
     positive_total_partial_3rd_dose = sum(positive_total_partial_3rd_dose),
     positive_total_full_3rd_dose = sum(positive_total_full_3rd_dose),
@@ -270,7 +284,7 @@ events_all <- left_join(events_deaths, events_hospit, by = c("first_week_day", "
 # moved from rows to columns
 #
 
-filename <- newest_matching_file("data/corona_age_and_gender_ver_*.csv")
+filename <- newest_matching_file("data/corona_age_and_gender_ver_*.csv",decreasing=TRUE)
 message("Loading ", filename)
 ages <- read.csv(filename)
 
@@ -306,8 +320,12 @@ ages <- ages %>%
     weekly_tests_num = as.numeric(weekly_tests_num),
     weekly_cases = as.numeric(weekly_cases),
     weekly_deceased = as.numeric(weekly_deceased),
-    first_week_day = as.Date(first_week_day, format = "%Y-%m-%d"),
-    last_week_day = as.Date(last_week_day, format = "%Y-%m-%d"),
+    weekly_first_dose = as.numeric(weekly_first_dose),
+    weekly_second_dose = as.numeric(weekly_second_dose),
+    weekly_third_dose = as.numeric(weekly_third_dose),
+    weekly_fourth_dose = as.numeric(weekly_fourth_dose),
+    first_week_day = as.Date(first_week_day, format = "%Y/%m/%d"),
+    last_week_day = as.Date(last_week_day, format = "%Y/%m/%d"),
   ) %>%
   mutate(
     weekly_female_tests_num = ifelse(gender == "female", weekly_tests_num, 0),
@@ -316,6 +334,14 @@ ages <- ages %>%
     weekly_male_cases = ifelse(gender == "male", weekly_cases, 0),
     weekly_female_deceased = ifelse(gender == "female", weekly_deceased, 0),
     weekly_male_deceased = ifelse(gender == "male", weekly_deceased, 0),
+    weekly_female_first_dose = ifelse(gender == "female", weekly_first_dose, 0),
+    weekly_male_first_dose = ifelse(gender == "male", weekly_first_dose, 0),
+    weekly_female_second_dose = ifelse(gender == "female", weekly_second_dose, 0),
+    weekly_male_second_dose = ifelse(gender == "male", weekly_second_dose, 0),
+    weekly_female_third_dose = ifelse(gender == "female", weekly_third_dose, 0),
+    weekly_male_third_dose = ifelse(gender == "male", weekly_third_dose, 0),
+    weekly_female_fourth_dose = ifelse(gender == "female", weekly_fourth_dose, 0),
+    weekly_male_fourth_dose = ifelse(gender == "male", weekly_fourth_dose, 0),
   )
 
 # Aggregate rows to align with other data sets
@@ -329,9 +355,17 @@ ages_agg <- ages %>%
     weekly_female_tests_num = sum(weekly_female_tests_num),
     weekly_female_cases = sum(weekly_female_cases),
     weekly_female_deceased = sum(weekly_female_deceased),
+    weekly_female_first_dose = sum(weekly_female_first_dose),
+    weekly_female_second_dose = sum(weekly_female_second_dose),
+    weekly_female_third_dose = sum(weekly_female_third_dose),
+    weekly_female_fourth_dose = sum(weekly_female_fourth_dose),
     weekly_male_tests_num = sum(weekly_male_tests_num),
     weekly_male_cases = sum(weekly_male_cases),
-    weekly_male_deceased = sum(weekly_male_deceased)
+    weekly_male_deceased = sum(weekly_male_deceased),
+    weekly_male_first_dose = sum(weekly_male_deceased),
+    weekly_female_second_dose = sum(weekly_female_second_dose),
+    weekly_female_third_dose = sum(weekly_female_third_dose),
+    weekly_male_fourth_dose = sum(weekly_male_fourth_dose)
   )
 
 #
@@ -403,8 +437,10 @@ data <- ages_agg %>%
     fraction_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_vaccinated_third_dose / total_population),
     fraction_partially_vaccinated_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_second_dose - total_two_dose_fully_vaccinated) / total_population),
     fraction_partially_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_third_dose - total_three_dose_fully_vaccinated) / total_population),
+    fraction_partially_vaccinated_fourth_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_vaccinated_fourth_dose - total_four_dose_fully_vaccinated) / total_population),
     fraction_fully_vaccinated_second_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, (total_two_dose_fully_vaccinated - total_vaccinated_third_dose) / total_population),
     fraction_fully_vaccinated_third_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_three_dose_fully_vaccinated / total_population),
+    fraction_fully_vaccinated_fourth_dose_only = ifelse(is.na(total_vaccinated_first_dose), 0, total_four_dose_fully_vaccinated / total_population),
   ) %>% arrange("first_week_day", "last_week_day", "age_group")
 
 # Save results

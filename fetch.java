@@ -3,7 +3,7 @@
 //JAVAC_OPTIONS -Xlint:unchecked
 //DEPS info.picocli:picocli:4.5.0
 //DEPS org.jsoup:jsoup:1.14.2
-//DEPS com.microsoft.playwright:playwright:1.12.0
+//DEPS com.microsoft.playwright:playwright:1.28.0
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;

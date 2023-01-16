@@ -15,7 +15,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
       - run: curl -Ls https://sh.jbang.dev | bash -s - app setup && echo "/home/runner/.jbang/bin" >> $GITHUB_PATH && rm -f hook_post_*.sh
       - name: Fetch
         run: ./fetch.java
